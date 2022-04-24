@@ -49,6 +49,7 @@ class StmtKind(Enum):
     AssignK = 2
     Inputk = 3
     OutputK = 4
+    FunBodyK = 5
 
 class ExpKind(Enum):
     RootK = 0
@@ -56,6 +57,7 @@ class ExpKind(Enum):
     ConstK = 2
     IdK = 3
     ParamsK = 4
+    LocalsK = 5
 
 # ExpType is used for type checking
 class ExpType(Enum):

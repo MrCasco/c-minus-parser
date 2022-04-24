@@ -1,5 +1,12 @@
-int a;
+int foo(int a, int b, int c) {
+  int A;int A;int A;int A;
+}
 
-int foo(void)
+void foo(void) {
+  int A;int A;int A;int A;
+  int A;int A;int A;int A;
+}
 
-void mimichito(int corazon, int pompis)
+void foo(void) {
+  int A;int A;int A;int A;
+}

@@ -13,4 +13,4 @@ class Node:
         self.type = None
 
     def __repr__(self):
-        return self.val
+        return self.val if self.val else 'Null'
