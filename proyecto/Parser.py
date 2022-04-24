@@ -8,12 +8,13 @@ Error = False
 lineno = 1
 SintaxTree = None
 imprimeScanner = False
+root = None
 
 def declaration_list():
-    # import ipdb; ipdb.set_trace()
+    global token, root
     t = declaration()
-    global token
     p = t
+    root.children.append(t)
     while token in (TokenType.INT, TokenType.VOID) :
         # import ipdb; ipdb.set_trace()
         q = declaration()
@@ -21,9 +22,8 @@ def declaration_list():
             if t == None:
                 t = p = q
             else: # now p cannot be NULL either
-                p.children.append(q)
+                root.children.append(q)
                 p = q
-    return t
 
 def type_specifier():
     # import ipdb; ipdb.set_trace()
@@ -42,6 +42,7 @@ def declaration():
     var_name = tokenString
     match(TokenType.ID)
     t = newStmtNode(StmtKind.DeclareK)
+    t.val = 'Declare'
     if token == TokenType.SEMICOLON:
         match(TokenType.SEMICOLON)
         t.children += [newExpNode(ExpKind.IdK)]
@@ -167,7 +168,9 @@ def printTree(tree):
             else:
                 print(tree.lineno, "Unknown ExpNode kind")
         elif tree.nodekind == NodeKind.ExpK:
-            if tree.exp == ExpKind.OpK:
+            if tree.exp == ExpKind.RootK:
+                print(tree.lineno, tree.val)
+            elif tree.exp == ExpKind.OpK:
                 print(tree.lineno, "Op: ", end ="")
                 printToken(tree.op," ")
             elif tree.exp == ExpKind.ConstK:
@@ -181,18 +184,20 @@ def printTree(tree):
             else:
                 print(tree.lineno, "Unknown ExpNode kind")
         else:
-            print(tree.lineno, "Unknown node kind");
+            print(tree.lineno, "Unknown node kind")
         for i in range(len(tree.children)):
             printTree(tree.children[i])
         tree = tree.sibling
         indentno -= 2 #UNINDENT
 
 def parser(imprime = True):
-    global token, tokenString, lineno
+    global token, tokenString, lineno, root
     token, tokenString = getToken(imprimeScanner)
-    t = declaration_list()
+    root = newExpNode(ExpKind.RootK)
+    root.val = 'Root'
+    declaration_list()
     if (token != TokenType.ENDFILE):
         syntaxError("Code ends before file. Missing ENDFILE character ($)\n")
     if imprime:
-        printTree(t)
+        printTree(root)
     return Error

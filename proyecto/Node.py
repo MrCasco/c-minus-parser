@@ -13,4 +13,4 @@ class Node:
         self.child = None
 
     def __repr__(self):
-        return self.val + ', '.join(self.children)
+        return self.val

@@ -57,6 +57,7 @@ class ExpKind(Enum):
     IdK = 2
     IntegerK = 3
     VoidK = 4
+    RootK = 5
 
 # ExpType is used for type checking
 class ExpType(Enum):
