@@ -10,7 +10,7 @@ class Node:
         self.statement = None
         self.exp = None
         self.sibling = None
-        self.child = None
+        self.type = None
 
     def __repr__(self):
         return self.val

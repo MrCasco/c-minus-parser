@@ -49,18 +49,17 @@ class StmtKind(Enum):
     AssignK = 2
     Inputk = 3
     OutputK = 4
-    DeclareK = 5
 
 class ExpKind(Enum):
-    OpK = 0
-    ConstK = 1
-    IdK = 2
-    IntegerK = 3
-    VoidK = 4
-    RootK = 5
+    RootK = 0
+    OpK = 1
+    ConstK = 2
+    IdK = 3
+    ParamsK = 4
 
 # ExpType is used for type checking
 class ExpType(Enum):
-    Void = 0
-    Integer = 1
-    Boolean = 2
+    Void = 'void'
+    Integer = 'int'
+    Boolean = 'bool'
+    Array = 'array'

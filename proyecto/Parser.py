@@ -16,7 +16,6 @@ def declaration_list():
     p = t
     root.children.append(t)
     while token in (TokenType.INT, TokenType.VOID) :
-        # import ipdb; ipdb.set_trace()
         q = declaration()
         if q != None:
             if t == None:
@@ -30,52 +29,60 @@ def type_specifier():
     global token
     if token == TokenType.INT:
         match(token)
-        return ExpKind.IntegerK, 'int'
+        return ExpType.Integer
     else:
         match(TokenType.VOID)
-        return ExpKind.VoidK, 'void'
+        return ExpType.Void
 
-def declaration():
-    # import ipdb; ipdb.set_trace()
+def declaration(param=False):
     global token, tokenString, lineno
-    var_type, type_string = type_specifier()
+    var_type = type_specifier()
     var_name = tokenString
     match(TokenType.ID)
-    t = newStmtNode(StmtKind.DeclareK)
-    t.val = 'Declare'
-    if token == TokenType.SEMICOLON:
-        match(TokenType.SEMICOLON)
-        t.children += [newExpNode(ExpKind.IdK)]
-        t.children[0].val = var_name
-        t.children += [newExpNode(var_type)]
-        t.children[1].val = type_string
-    elif token == TokenType.OPENBRACKET:
-        match(TokenType.OPENBRACKET)
-        match(TokenType.NUM)
-        match(TokenType.CLOSEBRACKET)
-    elif token == TokenType.OPENPAR:
-        match(TokenType.OPENPAR)
-        match(TokenType.NUM)
-        match(TokenType.CLOSEPAR)
-        t = compound_stmt()
+    t = newExpNode(ExpKind.IdK)
+    t.val = var_name
+    t.type = var_type
+    if not param:
+        if token == TokenType.OPENBRACKET:
+            match(TokenType.OPENBRACKET)
+            match(TokenType.NUM)
+            match(TokenType.CLOSEBRACKET)
+            match(TokenType.SEMICOLON)
+        elif token == TokenType.SEMICOLON:
+            match(TokenType.SEMICOLON)
+        elif token == TokenType.OPENPAR:
+            match(TokenType.OPENPAR)
+            t.children += [params()]
+            match(TokenType.CLOSEPAR)
+        else:
+            syntaxError("unexpected token -> ")
+            printToken(token,tokenString)
+            token, tokenString = getToken()
     else:
-        syntaxError("unexpected token -> ")
-        printToken(token,tokenString)
-        token, tokenString = getToken()
+        if var_type == ExpType.Void:
+            t.val = '_null_'
     return t
 
-def fun_declaration():
-    pass
+def params():
+    # import ipdb; ipdb.set_trace()
+    global token, tokenString
+    t = newExpNode(ExpKind.ParamsK)
+    if token == TokenType.INT:
+        t.children += [declaration(True)]
+        while token == TokenType.COMMA:
+            match(TokenType.COMMA)
+            t.children += [declaration(True)]
+        return t
+    t.children += [declaration(True)]
+    return t
 
 def match(expected):
-    # import ipdb; ipdb.set_trace()
     global token, tokenString, lineno
     if token == expected:
         token, tokenString = getToken(imprimeScanner)
-        # print("TOKEN:", token, lineno)
     else:
         syntaxError("unexpected token -> ")
-        # printToken(token, tokenString)
+        printToken(token, tokenString)
         print("      ")
 
 def printToken(token, tokenString):
@@ -85,6 +92,8 @@ def printToken(token, tokenString):
         print("(")
     elif token == TokenType.CLOSEPAR:
         print(")")
+    elif token == TokenType.ENDFILE:
+        print("EOF")
     # elif token == TokenType.ASSIGN:
     #     print(":=")
     # elif token == TokenType.LT:
@@ -101,8 +110,6 @@ def printToken(token, tokenString):
     #     print("*")
     # elif token == TokenType.OVER:
     #     print("/")
-    # elif token == TokenType.ENDFILE:
-    #     print("EOF")
     # elif token == TokenType.NUM:
     #   print("NUM, val= " + tokenString)
     # elif token == ID:
@@ -125,6 +132,7 @@ def newStmtNode(kind):
         t.stmt = kind
         t.lineno = lineno
     return t
+
 # Function newExpNode creates a new expression
 # node for syntax tree construction
 def newExpNode(kind):
@@ -139,7 +147,9 @@ def newExpNode(kind):
     return t
 
 def syntaxError(mensaje):
-    print('>>> Error de sintaxis: ' + mensaje)
+    global Error, lineno
+    print(">>> Syntax error at line " + str(lineno) + ": " + mensaje, end='')
+    Error = True
 
 indentno = 0
 
@@ -163,8 +173,6 @@ def printTree(tree):
                 print(tree.lineno, "Input: ", tree.name)
             elif tree.stmt == StmtKind.OutputK:
                 print(tree.lineno, "Output")
-            elif tree.stmt == StmtKind.DeclareK:
-                print(tree.lineno, "Declare")
             else:
                 print(tree.lineno, "Unknown ExpNode kind")
         elif tree.nodekind == NodeKind.ExpK:
@@ -176,11 +184,9 @@ def printTree(tree):
             elif tree.exp == ExpKind.ConstK:
                 print(tree.lineno, "Const: ", tree.val)
             elif tree.exp == ExpKind.IdK:
-                print(tree.lineno, "Id: ", tree.val)
-            elif tree.exp == ExpKind.IntegerK:
-                print(tree.lineno, "Integer: ", tree.val)
-            elif tree.exp == ExpKind.VoidK:
-                print(tree.lineno, "Void: ", tree.val)
+                print(tree.lineno, "Id:", tree.val + ' Type: ' + tree.type.value)
+            elif tree.exp == ExpKind.ParamsK:
+                print(tree.lineno, "Params: ")
             else:
                 print(tree.lineno, "Unknown ExpNode kind")
         else:
@@ -188,7 +194,7 @@ def printTree(tree):
         for i in range(len(tree.children)):
             printTree(tree.children[i])
         tree = tree.sibling
-        indentno -= 2 #UNINDENT
+    indentno -= 2 #UNINDENT
 
 def parser(imprime = True):
     global token, tokenString, lineno, root
