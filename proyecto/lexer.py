@@ -76,7 +76,6 @@ def getToken(imprime=True):
     # import ipdb; ipdb.set_trace()
     while p < len(string) and (string[p] != '$' or (string[p] == '$' and state != 0)):
         char = string[p]
-        print(char)
         if char in letter:
             col = 0
         elif char in blank:
@@ -270,7 +269,6 @@ def getToken(imprime=True):
             lexem, state = reset(lexem, token, imprime)
             return token, lx
         p += 1
-        print(string[p], p, lexem, char)
         if state != 0:
             if char in ' ':
                 p -= 1

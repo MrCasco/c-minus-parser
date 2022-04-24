@@ -6,3 +6,11 @@ class Node:
         self.exp = exp
         self.op = op
         self.val = val
+        self.nodekind = None
+        self.statement = None
+        self.exp = None
+        self.sibling = None
+        self.child = None
+
+    def __repr__(self):
+        return self.val + ', '.join(self.children)

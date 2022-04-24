@@ -92,6 +92,4 @@ class TreeNode:
         self.val = None                   # tipo int
         self.name = None                  # tipo String
         # for type checking of exps
-        self.type = None                  # de tipo ExpType
-
-
+        self.type = None
