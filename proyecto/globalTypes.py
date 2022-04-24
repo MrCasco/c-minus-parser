@@ -50,6 +50,7 @@ class StmtKind(Enum):
     Inputk = 3
     OutputK = 4
     FunBodyK = 5
+    ReturnK = 6
 
 class ExpKind(Enum):
     RootK = 0

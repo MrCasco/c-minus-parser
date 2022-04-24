@@ -1,12 +1,8 @@
-int foo(int a, int b, int c) {
-  int A;int A;int A;int A;
-}
+/*Un programa para realizar el algoritmo
+de Euclides para calcular mcd.*/
 
-void foo(void) {
-  int A;int A;int A;int A;
-  int A;int A;int A;int A;
-}
-
-void foo(void) {
-  int A;int A;int A;int A;
+int f(void) {
+  int b;
+  int c;
+  return (foo*5)/(5*2);
 }

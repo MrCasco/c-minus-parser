@@ -24,6 +24,7 @@ def match(expected):
         print("      ")
 
 def stmt_sequence():
+    import ipdb; ipdb.set_trace()
     t = statement()
     p = t
     while ((token!=TokenType.ENDFILE) and (token!=TokenType.END)
@@ -39,6 +40,7 @@ def stmt_sequence():
     return t
 
 def statement():
+    import ipdb; ipdb.set_trace()
     global token, tokenString, lineno
     #print("STATEMENT: ", token, lineno)
     t = None;

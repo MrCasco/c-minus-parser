@@ -1,6 +1,9 @@
 from globalTypes import *
 
 
+incomment = False
+lineno = 1
+
 def globalesLexer(programa, posicion, progLong):
     global string, p, lng
     p = posicion
@@ -17,6 +20,8 @@ def reset(lexem, token, imprime=True):
 def getToken(imprime=True):
     global string
     global p
+    global lineno
+    global incomment
     table = [
         [1, 3, 12, 18, 13, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 19, 20, 0],
         [1]+[2]*19,
@@ -79,6 +84,8 @@ def getToken(imprime=True):
         if char in letter:
             col = 0
         elif char in blank:
+            if char == '\n':
+                lineno += 1
             col = 18
         elif char in digit:
             col = 1
@@ -115,8 +122,11 @@ def getToken(imprime=True):
         elif char == '!':
             col = 17
         else:
-            p += 1
-            return TokenType.ERROR, 'ERROR' + char + 'invalid'
+            if incomment:
+                state = 0
+                col = 0
+            else:
+                return TokenType.ERROR, 'ERROR' + char + 'invalid'
 
         state = table[state][col]
 
@@ -128,146 +138,172 @@ def getToken(imprime=True):
                 token = TokenType.ID
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
+            else:
+                state = 7
         elif state == 4:
             p -= 1
             token = TokenType.NUM
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 5:
             token = TokenType.PLUS
             lexem = '+'
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 6:
             token = TokenType.MINUS
             lexem = '-'
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 12:
             token = TokenType.OPENBRACKET
             lexem += '['
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 13:
             token = TokenType.CLOSEBRACKET
             lexem = ']'
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 14:
             token = TokenType.OPENPAR
             lexem = '('
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 15:
             token = TokenType.CLOSEPAR
             lexem = ')'
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 16:
             token = TokenType.OPENCURLY
             lexem = '{'
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 17:
             token = TokenType.CLOSECURLY
             lexem = '}'
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 18:
             token = TokenType.COMMA
             lexem = ','
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 19:
             token = TokenType.SEMICOLON
             lexem = ';'
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 21:
             token = TokenType.LESSTHAN
             lexem = '<'
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 22:
             token = TokenType.LEQ
             lexem = '<='
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 23:
             token = TokenType.GREATERTHAN
             lexem = '>'
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 24:
             token = TokenType.GEQ
             lexem = '>='
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 25:
             token = TokenType.EQUALS
             lexem = '='
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 26:
             token = TokenType.EQEQ
             lexem = '=='
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 27:
             token = TokenType.ERROR
             lexem = '!'
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 28:
             token = TokenType.DIFF
             lexem = '!='
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 29:
             p -= 1
             token = TokenType.DIV
             lexem = '/'
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         elif state == 30:
+            p -= 1
             token = TokenType.OPENCMNT
             lexem = '/*'
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            incomment = True
         elif state == 31:
             token = TokenType.CLOSECMNT
             lexem = '*/'
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            incomment = False
         elif state == 32:
+            p -= 1
             token = TokenType.TIMES
             lexem = '*'
             lx = lexem
             lexem, state = reset(lexem, token, imprime)
-            return token, lx
+            if not incomment:
+                return token, lx, lineno
         p += 1
         if state != 0:
             if char in ' ':
@@ -276,5 +312,7 @@ def getToken(imprime=True):
                 lexem += char
         else:
             while p < lng and string[p] in blank:
+                if string[p] == '\n':
+                    lineno += 1
                 p += 1
-    return TokenType.ENDFILE, '$'
+    return TokenType.ENDFILE, '$', lineno
