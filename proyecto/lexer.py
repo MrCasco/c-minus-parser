@@ -294,6 +294,7 @@ def getToken(imprime=True):
             token = TokenType.CLOSECMNT
             lexem = '*/'
             lx = lexem
+            lineno += 1
             lexem, state = reset(lexem, token, imprime)
             incomment = False
         elif state == 32:

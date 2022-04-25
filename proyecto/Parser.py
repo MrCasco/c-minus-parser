@@ -103,9 +103,84 @@ def local_declaration():
     return t
 
 def statement_list(parent):
-    while token != TokenType.CLOSECURLY:
-        if token == TokenType.RETURN:
+    # import ipdb; ipdb.set_trace()
+    while token != TokenType.CLOSECURLY and token != TokenType.ELSE:
+        if token == TokenType.INT:
+            parent.children += [compound_stmt()]
+        elif token == TokenType.ID:
+            parent.children += [expression()]
+            match(TokenType.SEMICOLON)
+        elif token == TokenType.RETURN:
             parent.children += [return_stmt()]
+        elif token == TokenType.IF:
+            parent.children += [selection_stmt()]
+
+def selection_stmt():
+    t = newStmtNode(StmtKind.IfK)
+    match(TokenType.IF)
+    match(TokenType.OPENPAR)
+    condition = expression()
+    match(TokenType.CLOSEPAR)
+    t.children += [condition]
+    statement_list(t)
+    if token == TokenType.ELSE:
+        match(TokenType.ELSE)
+        statement_list(t)
+    return t
+
+def expression():
+    # import ipdb; ipdb.set_trace()
+    t = None
+    if token == TokenType.ID:
+        t = newExpNode(ExpKind.IdK)
+        t.name = tokenString
+        name = t.name
+        match(TokenType.ID)
+        if token == TokenType.OPENBRACKET:
+            match(TokenType.OPENBRACKET)
+            expression()
+            match(TokenType.CLOSEBRACKET)
+            match(TokenType.EQUALS)
+            q = expression()
+            t.children += [q]
+        elif token == TokenType.EQUALS:
+            name = t.name
+            t = newStmtNode(StmtKind.AssignK)
+            t.name = name
+            match(TokenType.EQUALS)
+            q = expression()
+            t.children += [q]
+        elif token == TokenType.SEMICOLON:
+            name = t.name
+            t = newExpNode(ExpKind.IdK)
+            t.name = name
+        elif token in (TokenType.LESSTHAN, TokenType.LEQ, TokenType.GREATERTHAN, TokenType.GEQ, TokenType.EQEQ, TokenType.DIFF):
+            cond = newExpNode(ExpKind.OpK)
+            cond.op = token
+            match(token)
+            p = add_expression()
+            cond.children += [t, p]
+            return cond
+        elif token == TokenType.OPENPAR:
+            t = newStmtNode(StmtKind.FunCallK)
+            t.name = name
+            match(TokenType.OPENPAR)
+            args(t)
+            match(TokenType.CLOSEPAR)
+            return t
+        elif token == TokenType.COMMA:
+            return t
+    else:
+        t = add_expression()
+        if token in (TokenType.LESSTHAN, TokenType.LEQ, TokenType.GREATERTHAN, TokenType.GEQ, TokenType.EQEQ, TokenType.DIFF):
+            q = newExpNode(ExpKind.OpK)
+            q.op = token
+            q.children += [t]
+            match(token)
+            t = add_expression()
+            q.children += [t]
+            t = q
+    return t
 
 def return_stmt():
     global lineno
@@ -155,10 +230,22 @@ def factor():
             t.val = int(tokenString)
         match(TokenType.NUM)
     elif token == TokenType.ID:
-        t = newExpNode(ExpKind.IdK)
-        if t != None and token == TokenType.ID:
-            t.name = tokenString
+        name = tokenString
         match(TokenType.ID)
+        if token == TokenType.OPENPAR:
+            t = newStmtNode(StmtKind.FunCallK)
+            t.name = name
+            match(TokenType.OPENPAR)
+            arguments = args(t)
+            if arguments:
+                t.children += [arguments]
+            match(TokenType.CLOSEPAR)
+        elif token == TokenType.OPENBRACKET:
+            t = newExpNode(ExpKind.IdK)
+            t.name = name
+        else:
+            t = newExpNode(ExpKind.IdK)
+            t.name = name
     elif token == TokenType.OPENPAR:
         match(TokenType.OPENPAR)
         t = add_expression()
@@ -169,19 +256,13 @@ def factor():
         token, tokenString, lineno = getToken()
     return t
 
-def expression():
-    if token == TokenType.ID:
-        match(TokenType.ID)
-        t = newExpNode(ExpKind.IdK)
-        if token == TokenType.OPENBRACKET:
-            match(TokenType.OPENBRACKET)
-            expression()
-            match(TokenType.CLOSEBRACKET)
-            match(TokenType.EQUALS)
-            expression()
-    elif token == TokenType.NUM:
-        pass
-
+def args(parent):
+    # import ipdb; ipdb.set_trace()
+    if token != TokenType.CLOSEPAR:
+        parent.children += [expression()]
+        while token == TokenType.COMMA:
+            match(token)
+            parent.children += [expression()]
 
 def printToken(token, tokenString):
     if token in {TokenType.IF, TokenType.ELSE}:
@@ -251,6 +332,8 @@ def printTree(tree):
                 print(tree.lineno, "Body: ")
             elif tree.stmt == StmtKind.ReturnK:
                 print(tree.lineno, "Return: ")
+            elif tree.stmt == StmtKind.FunCallK:
+                print(tree.lineno, "Call: ", tree.name)
             else:
                 print(tree.lineno, "Unknown ExpNode kind")
         elif tree.nodekind == NodeKind.ExpK:

@@ -1,8 +1,7 @@
-/*Un programa para realizar el algoritmo
-de Euclides para calcular mcd.*/
-
-int f(void) {
-  int b;
-  int c;
-  return (foo*5)/(5*2);
+void main(void){
+  int x; int y;
+  if(v==0) return u;
+  else pompis = mimichito;
+  pompis(a, b, c);
+  x = a(y, x);
 }

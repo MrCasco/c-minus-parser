@@ -4,12 +4,15 @@ class TokenType(Enum):
     ENDFILE = 300
     ERROR = 301
     # reserved words
-    ELSE = 'else'
     IF = 'if'
+    ELSE = 'else'
     INT = 'int'
     RETURN = 'return'
     VOID = 'void'
     WHILE = 'while'
+    INPUT = 'input'
+    OUTPUT = 'output'
+    MAIN = 'main'
 
     # multicharacter tokens
     ID = 310
@@ -51,6 +54,8 @@ class StmtKind(Enum):
     OutputK = 4
     FunBodyK = 5
     ReturnK = 6
+    MainK = 7
+    FunCallK = 8
 
 class ExpKind(Enum):
     RootK = 0
