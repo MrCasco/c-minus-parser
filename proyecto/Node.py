@@ -12,6 +12,8 @@ class Node:
         self.exp = None
         self.sibling = None
         self.type = None
+        self.size = None
+        self.index = None
 
     def __repr__(self):
         return self.name if self.name else 'Null'

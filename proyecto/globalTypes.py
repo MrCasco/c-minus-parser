@@ -48,14 +48,15 @@ class NodeKind(Enum):
 
 class StmtKind(Enum):
     IfK = 0
-    RepeatK = 1
+    WhileK = 1
     AssignK = 2
     Inputk = 3
     OutputK = 4
-    FunBodyK = 5
+    BodyK = 5
     ReturnK = 6
     MainK = 7
     FunCallK = 8
+    ArrayAtK = 9
 
 class ExpKind(Enum):
     RootK = 0
