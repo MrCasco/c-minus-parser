@@ -28,7 +28,7 @@ def declaration_list():
         if q != None:
             if t == None:
                 t = p = q
-            else: # now p cannot be NULL either
+            else:
                 root.children.append(q)
                 p = q
 
@@ -166,19 +166,20 @@ def expression():
             op.children += [t, right]
             return op
         elif token == TokenType.OPENBRACKET:
+            # import ipdb; ipdb.set_trace()
             t = newStmtNode(StmtKind.ArrayAtK)
             t.name = name
             t.type = ExpType.Array
             match(TokenType.OPENBRACKET)
-            q = expression()
+            index = expression()
             match(TokenType.CLOSEBRACKET)
-            t.children += [q]
+            t.children += [index]
             if token == TokenType.EQUALS:
                 assign = newStmtNode(StmtKind.AssignK)
                 assign.name = name
                 match(TokenType.EQUALS)
                 q = expression()
-                assign.children += [q]
+                assign.children += [t, q]
                 return assign
             elif token == TokenType.SEMICOLON:
                 return t
@@ -191,11 +192,12 @@ def expression():
                 return op
         elif token == TokenType.EQUALS:
             name = t.name
-            t = newStmtNode(StmtKind.AssignK)
-            t.name = name
+            assign = newStmtNode(StmtKind.AssignK)
+            assign.name = name
             match(TokenType.EQUALS)
             q = expression()
-            t.children += [q]
+            assign.children += [t, q]
+            return assign
         elif token == TokenType.SEMICOLON:
             t = newExpNode(ExpKind.IdK)
             t.name = name
@@ -373,7 +375,7 @@ def printTree(tree):
             elif tree.stmt == StmtKind.WhileK:
                 print(tree.lineno, "While: ")
             elif tree.stmt == StmtKind.AssignK:
-                print(tree.lineno, "Assign to: ", tree.name)
+                print(tree.lineno, "Assign: ")
             elif tree.stmt == StmtKind.Inputk:
                 print(tree.lineno, "Input: ", tree.name)
             elif tree.stmt == StmtKind.OutputK:

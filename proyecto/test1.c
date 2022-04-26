@@ -11,7 +11,7 @@ de Euclides para calcular mcd. */
 int a[99];
 
 void main(int b[]){
-    a[9] = v;
+    x = a[low];
     /* x = input(); y = input();
     output(gcd(x,y));
     if (x == 0){
