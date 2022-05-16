@@ -1,20 +1,9 @@
 /* Un programa para realizar el algoritmo
 de Euclides para calcular mcd. */
+int minloc(int x){
+  x = 6;
+}
 
-/*int gcd(int u , int v){
-    int x; int y;
-    if(v==0) return u;
-    else return gcd(v,u-u/v*v);
-    /* u-u/v*v == u mod v
-}*/
-
-int a[99];
-
-void main(int b[]){
-    x = a[low];
-    /* x = input(); y = input();
-    output(gcd(x,y));
-    if (x == 0){
-      int b;
-    } */
+int foo(int a[]){
+  int y[9];
 }

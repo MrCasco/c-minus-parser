@@ -370,23 +370,23 @@ def printTree(tree):
     while tree != None:
         printBlanks();
         if (tree.nodekind == NodeKind.StmtK):
-            if tree.stmt == StmtKind.IfK:
+            if tree.statement == StmtKind.IfK:
                 print(tree.lineno, "If")
-            elif tree.stmt == StmtKind.WhileK:
+            elif tree.statement == StmtKind.WhileK:
                 print(tree.lineno, "While: ")
-            elif tree.stmt == StmtKind.AssignK:
+            elif tree.statement == StmtKind.AssignK:
                 print(tree.lineno, "Assign: ")
-            elif tree.stmt == StmtKind.Inputk:
+            elif tree.statement == StmtKind.Inputk:
                 print(tree.lineno, "Input: ", tree.name)
-            elif tree.stmt == StmtKind.OutputK:
+            elif tree.statement == StmtKind.OutputK:
                 print(tree.lineno, "Output")
-            elif tree.stmt == StmtKind.BodyK:
+            elif tree.statement == StmtKind.BodyK:
                 print(tree.lineno, "Body: ")
-            elif tree.stmt == StmtKind.ReturnK:
+            elif tree.statement == StmtKind.ReturnK:
                 print(tree.lineno, "Return: ")
-            elif tree.stmt == StmtKind.FunCallK:
+            elif tree.statement == StmtKind.FunCallK:
                 print(tree.lineno, "Call: ", tree.name)
-            elif tree.stmt == StmtKind.ArrayAtK:
+            elif tree.statement == StmtKind.ArrayAtK:
                 print(tree.lineno, "Array: ", tree.name, ' at index:')
             else:
                 print(tree.lineno, "Unknown ExpNode kind")
@@ -427,7 +427,7 @@ def newStmtNode(kind):
         print("Out of memory error at line " + lineno)
     else:
         t.nodekind = NodeKind.StmtK
-        t.stmt = kind
+        t.statement = kind
         t.lineno = lineno
     return t
 
@@ -452,4 +452,4 @@ def parser(imprime = True):
         syntaxError("Code ends before file. Missing ENDFILE character ($)\n")
     if imprime:
         printTree(root)
-    return Error
+    return root

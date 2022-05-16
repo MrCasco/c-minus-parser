@@ -1,10 +1,10 @@
 from globalTypes import *
 #from scanner import *
 from Parser import *
-# from analyze import *
+from analyze import *
 # from cgen import *
 
-fileName = "prueba2"
+fileName = "prueba"
 f = open(fileName + '.tny', 'r')
 program = f.read() 		# lee todo el archivo a compilar
 f.close()                       # cerrar el archivo con programa fuente
@@ -23,15 +23,15 @@ Error = False
 recibeParser(program, position, progLong) # para mandar los globales al parser
 syntaxTree, Error = parse(True)
 
-# if not(Error):
-#     print()
-#     print("Building Symbol Table...")
-#     buildSymtab(syntaxTree, False)
-#     print()
-#     print("Checking Types...")
-#     typeCheck(syntaxTree)
-#     print()
-#     print("Type Checking Finished")
-#     #print(BucketList) # ¿Por qué se mantiene esta variable si está declarada en symtab.py?
+if not(Error):
+    print()
+    print("Building Symbol Table...")
+    buildSymtab(syntaxTree, True)
+    print()
+    print("Checking Types...")
+    typeCheck(syntaxTree)
+    print()
+    print("Type Checking Finished")
+    # print(BucketList) # ¿Por qué se mantiene esta variable si está declarada en symtab.py?
 # if not(Error):
 #     codeGen(syntaxTree, fileName, True)
