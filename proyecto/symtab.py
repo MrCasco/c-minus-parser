@@ -18,10 +18,11 @@ def st_lookup(name, table):
         return table[name]['lineno']
     return -1
 
-def st_global_lookup(name, prev_table, tables):
-    for i in range(prev_table, -1, -1):
-        if st_lookup(name, tables[prev_table]):
+def st_global_lookup(name, parent, tables):
+    while parent != -1:
+        if st_lookup(name, tables[parent]) != -1:
             return True
+        parent = tables[parent]['parent']
     return -1
 
 # Procedure printSymTab prints a formatted
@@ -31,7 +32,9 @@ def printSymTables(tables):
     for table in tables:
         print("Variable Name  Line No.    Attributes")
         print("-------------  --------   ------------")
-        for key, value in table.items():
-            print(f"{key:14}{value['lineno']:2d}", end='')
+        tab = table.copy()
+        tab.pop('parent')
+        for key, value in tab.items():
+            print(f"{key:14}{value['lineno']:3d}", end='')
             print(' '*9, value['type'])
         print('\n')

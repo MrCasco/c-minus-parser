@@ -1,9 +1,12 @@
 /* Un programa para realizar el algoritmo
 de Euclides para calcular mcd. */
+int b;
+
 int minloc(int x){
-  x = 6;
 }
 
-int foo(int a[]){
-  int y[9];
+int foo(){
+  while (x == 0) {
+    b = 9;
+  }
 }

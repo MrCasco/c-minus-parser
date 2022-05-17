@@ -8,59 +8,60 @@ prev_var = None
 
 # Stack that has all symbol
 # tables within the environment
-tables = [{}]
+tables = [{'parent': -1}]
 
 def needNewStack(ast):
     if ast.exp == ExpKind.IdK and len(ast.children) == 2:
         return True
-    return ast.statement in (StmtKind.IfK, StmtKind.WhileK)
+    elif ast.statement == StmtKind.WhileK:
+        if len(ast.children[1].children[0].children) != 0:
+            return True
+    return False
+    # return ast.statement in (StmtKind.IfK, StmtKind.WhileK)
 
 def generateTable(ast):
     # import ipdb; ipdb.set_trace()
     global tables, cur_table
     needed_new_stack = False
 
+    insertNode(ast)
     if needNewStack(ast):
-        insertNode(ast)
-        tables += [{}]
-        prev_table = cur_table
+        tables += [{'parent': cur_table}]
         cur_table = len(tables)-1
         needed_new_stack = True
-    else:
-        insertNode(ast)
     for child in ast.children:
         if child:
             generateTable(child)
     if needed_new_stack:
-        cur_table = prev_table
+        cur_table = tables[cur_table]['parent']
 
-def typeChecker(ast):
+def semantica(ast, imprime=True):
     for child in ast.children:
         if child:
-            typeChecker(child)
+            semantica(child)
     checkNode(ast)
 
 # Procedure insertNode inserts identifiers stored in t into
 # the symbol table
 def insertNode(t):
     # import ipdb; ipdb.set_trace()
-    global location, cur_table, prev_var
+    global location, cur_table
     if t.nodekind == NodeKind.StmtK:
         if t.statement in [StmtKind.AssignK, StmtKind.Inputk]:
-            if st_lookup(t.name, tables[cur_table]) == -1:
+            if st_lookup(t.name, tables[cur_table]) == -1 and st_global_lookup(t.name, tables[cur_table]['parent'], tables) == -1:
                 # not yet in table, so treat as error
                 print('Unknown variable:', t.name, 'has not been previously declared at line', t.lineno)
                 Error = True
     elif t.nodekind == NodeKind.ExpK:
         if t.exp == ExpKind.IdK:
-            if (st_lookup(t.name, tables[cur_table]) == -1):
+            # print('HEREEEEEE', st_global_lookup(t.name, tables[cur_table]['parent'], tables))
+            if st_lookup(t.name, tables[cur_table]) == -1 and st_global_lookup(t.name, tables[cur_table]['parent'], tables) == -1:
                 # not yet in table, so treat as new definition */
                 st_insert(t, tables, cur_table)
-            else:
-                tables[cur_table][t.name]['type'] = t.type
+                # tables[cur_table][t.name]['type'] = t.type
 # Function buildSymtab constructs the symbol
 # table by preorder traversal of the syntax tree
-def tabla(syntaxTree, imprime):
+def tabla(syntaxTree, imprime=True):
     generateTable(syntaxTree)
     # traverse(syntaxTree, insertNode, nullProc)
     if imprime:
@@ -76,9 +77,9 @@ def typeError(t, message):
 def checkNode(t):
     if t.nodekind == NodeKind.ExpK:
         if t.exp == ExpKind.OpK:
-            if ((t.child[0].type != ExpType.Integer) or (t.child[1].type != ExpType.Integer)):
+            if t.children[0].type != ExpType.Integer or t.children[1].type != ExpType.Integer:
                 typeError(t,"Op applied to non-integer")
-            if ((t.op == TokenType.EQ) or (t.op == TokenType.LT)):
+            if ((t.op == TokenType.EQEQ) or (t.op == TokenType.LESSTHAN)):
                 t.type = ExpType.Boolean
             else:
                 t.type = ExpType.Integer
@@ -86,17 +87,17 @@ def checkNode(t):
             t.type = ExpType.Integer
     elif t.nodekind == NodeKind.StmtK:
         if t.statement == StmtKind.IfK:
-            if (t.child[0].type == ExpType.Integer):
-                typeError(t.child[0],"if test is not Boolean")
+            if (t.children[0].type == ExpType.Integer):
+                typeError(t.children[0],"if test is not Boolean")
         elif t.statement == StmtKind.AssignK:
-            if (t.child[0].type != ExpType.Integer):
-                typeError(t.child[0],"assignment of non-integer value")
-        elif t.statement == StmtKind.WriteK:
-            if (t.child[0].type != ExpType.Integer):
-                typeError(t.child[0],"write of non-integer value")
-        elif t.statement == StmtKind.RepeatK:
-            if (t.child[1].type == ExpType.Integer):
-                typeError(t.child[1],"repeat test is not Boolean")
+            if (t.children[0].type != ExpType.Integer):
+                typeError(t.children[0],"assignment of non-integer value")
+        elif t.statement == StmtKind.OutputK:
+            if (t.children[0].type != ExpType.Integer):
+                typeError(t.children[0],"write of non-integer value")
+        elif t.statement == StmtKind.WhileK:
+            if (t.children[1].type == ExpType.Integer):
+                typeError(t.children[1],"repeat test is not Boolean")
 
 # Procedure typeCheck performs type checking
 # by a postorder syntax tree traversal

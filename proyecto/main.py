@@ -1,7 +1,7 @@
 from Parser import *
 from semantica import *
 
-f = open('test.c', 'r')
+f = open('test1.c', 'r')
 programa = f.read()       # lee todo el archivo a compilar
 progLong = len(programa)   # longitud original del programa
 programa = programa + '$'   # agregar un caracter $ que represente EOF
@@ -15,8 +15,8 @@ AST = parser(True)
 print()
 print("Building Symbol Table...")
 tabla(AST, True)
-# print()
-# print("Checking Types...")
-# typeCheck(AST)
-# print()
-# print("Type Checking Finished")
+print()
+print("Checking Types...")
+semantica(AST, True)
+print()
+print("Type Checking Finished")
