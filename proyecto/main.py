@@ -1,5 +1,6 @@
 from Parser import *
 from semantica import *
+from cgen import *
 
 f = open('test1.c', 'r')
 programa = f.read()       # lee todo el archivo a compilar
@@ -20,3 +21,4 @@ print("Checking Types...")
 semantica(AST, True)
 print()
 print("Type Checking Finished")
+codeGen(AST, 'assembly_code.s')
