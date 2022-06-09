@@ -54,16 +54,13 @@ def insertNode(t):
                 Error = True
     elif t.nodekind == NodeKind.ExpK:
         if t.exp == ExpKind.IdK:
-            # print('HEREEEEEE', st_global_lookup(t.name, tables[cur_table]['parent'], tables))
             if st_lookup(t.name, tables[cur_table]) == -1 and st_global_lookup(t.name, tables[cur_table]['parent'], tables) == -1:
                 # not yet in table, so treat as new definition */
                 st_insert(t, tables, cur_table)
-                # tables[cur_table][t.name]['type'] = t.type
 # Function buildSymtab constructs the symbol
 # table by preorder traversal of the syntax tree
 def tabla(syntaxTree, imprime=True):
     generateTable(syntaxTree)
-    # traverse(syntaxTree, insertNode, nullProc)
     if imprime:
         print()
         print("Symbol table:")
